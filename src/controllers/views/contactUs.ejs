@@ -1,0 +1,51 @@
+<!-- views/template.ejs -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            th {
+                border: 1px solid black;
+                width: 200px;
+                text-align: left;
+                padding: 10px;
+            }
+        </style>
+    </head>    
+    <body>
+        <h3><%= template_form %></h3>
+        <table style="border: 1px solid black"> 
+            <tr>
+                <th>Name</th>
+                <th><%= template_name %></th>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <th><%= template_email %></th>
+            </tr>
+            <tr>
+                <th>Role</th>
+                <th><%= template_role %></th>
+            </tr>
+            <tr>
+                <th>OtherRole</th>
+                <th><%= template_other_role %></th>
+            </tr>
+            <tr>
+                <th>companyName</th>
+                <th><%= template_company %></th>
+            </tr>
+            <tr>
+                <th>Business Function</th>
+                <th><%= template_business %></th>
+            </tr>
+            <tr>
+                <th>Reason</th>
+                <th><%= template_reason %></th>
+            </tr>
+            <tr>
+                <th>Source</th>
+                <th><%= template_source %></th>
+            </tr>
+        </table>
+    </body>    
+</html>

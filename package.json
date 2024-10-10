@@ -1,0 +1,80 @@
+{
+  "name": "mint-nft",
+  "version": "0.0.0",
+  "private": true,
+  "bin": {
+    "create-comp": "./bin/index.js"
+  },
+  "scripts": {
+    "start": "./node_modules/.bin/cross-env NODE_ENV=dev ./node_modules/.bin/nodemon src/app.js",
+    "kill-start": "npx kill-port 3000 && ./node_modules/.bin/cross-env NODE_ENV=dev ./node_modules/.bin/nodemon src/app.js",
+    "test": "jest -i --colors --verbose --forceExit",
+    "test:watch": "jest -i --watchAll",
+    "coverage": "jest -i --coverage",
+    "coverage:coveralls": "jest -i --coverage --coverageReporters=text-lcov | coveralls",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prettier": "prettier --check **/*.js",
+    "prettier:fix": "prettier --write **/*.js"
+  },
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "branches": 80,
+        "functions": 80,
+        "lines": 80,
+        "statements": -10
+      }
+    }
+  },
+  "prisma": {
+    "seed": "node prisma/seed/seed.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^6.2.0",
+    "@hashgraph/sdk": "^2.27.0",
+    "@prisma/client": "^3.14.0",
+    "@types/morgan": "^1.9.3",
+    "compression": "^1.7.4",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "coveralls": "^3.1.1",
+    "cross-env": "^7.0.3",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.0",
+    "ejs": "^3.1.9",
+    "eslint": "^8.14.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "express": "~4.16.1",
+    "express-mongo-sanitize": "^2.2.0",
+    "generate-unique-id": "^2.0.1",
+    "helmet": "^5.0.2",
+    "http-errors": "~1.6.3",
+    "http-status": "^1.5.1",
+    "jest": "^28.0.3",
+    "joi": "^17.6.0",
+    "jsonwebtoken": "^9.0.0",
+    "moment": "^2.29.4",
+    "morgan": "^1.10.0",
+    "multer": "^1.4.5-lts.1",
+    "nft.storage": "^7.1.0",
+    "node-cron": "^3.0.2",
+    "node-mocks-http": "^1.11.0",
+    "nodemailer": "^6.9.3",
+    "nodemon": "^2.0.16",
+    "prettier": "^2.6.2",
+    "prisma": "^3.14.0",
+    "superagent": "^7.1.3",
+    "supertest": "^6.2.3",
+    "swagger-jsdoc": "^6.2.1",
+    "swagger-ui-express": "^4.3.0",
+    "winston": "^3.7.2",
+    "xss-clean": "^0.1.1"
+  },
+  "devDependencies": {
+    "file-system": "^2.2.2",
+    "yargs": "13.2"
+  }
+}

@@ -1,0 +1,18 @@
+namespace: "dgv-backend"
+system: dgv-mintnft
+service:
+  name: dgv-mintnft
+  image:
+    repoURI: "dgvmvp.azurecr.io"
+    name: "dgvmvp"
+    tag: "mintnft-#{tag}#"
+    replicaCount: 1
+    imagePullPolicy: Always
+version: 1
+ingress:
+  gateWayName: "dgv-gateway/dgv-gateway"
+  host: "backend.dgverse.in"
+configMap:
+  fileName: config.yaml
+  content:
+

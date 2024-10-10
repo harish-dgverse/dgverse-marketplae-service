@@ -1,0 +1,17 @@
+{
+    "services": {
+        "hedera-service": {
+            "protocol": "http:",
+            "timeout": 30000,
+            "connectTimeout": 6000,
+            "hostname": {
+                "default": "localhost:4002",
+                "prod": "later"
+            },
+            "basePath": {
+                "default": "/token-service/v1/",
+                "prod": "/token-service/v1/"
+            }
+        }
+    }
+}

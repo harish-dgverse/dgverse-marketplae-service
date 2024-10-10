@@ -1,0 +1,51 @@
+<!-- views/template.ejs -->
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            th {
+                border: 1px solid black;
+                width: 200px;
+                text-align: left;
+                padding: 10px;
+            }
+        </style>
+    </head>    
+    <body>
+        <h3><%= template_form %></h3>
+        <table style="border: 1px solid black"> 
+            <tr>
+                <th>Who are creating FT for:</th>
+                <th><%= template_ftAudience %></th>
+            </tr>
+            <tr>
+                <th>Who are creating FT for (others)</th>
+                <th><%= template_ftAudienceOthers %></th>
+            </tr>
+            <tr>
+                <th>Who is the target audience</th>
+                <th><%= template_targetAudience %></th>
+            </tr>
+            <tr>
+                <th>How did you hear about us</th>
+                <th><%= template_source %></th>
+            </tr>
+            <tr>
+                <th>How did you hear about us: Other option</th>
+                <th><%= template_sourceOthers %></th>
+            </tr>
+            <tr>
+                <th>Team size</th>
+                <th><%= template_teamSize %></th>
+            </tr>
+            <tr>
+                <th>Website</th>
+                <th><%= template_website %></th>
+            </tr>
+            <tr>
+                <th>Social media links</th>
+                <th><%= template_socialMedia %></th>
+            </tr>
+        </table>
+    </body>    
+</html>

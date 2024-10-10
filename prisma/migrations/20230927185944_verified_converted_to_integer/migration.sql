@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `user` MODIFY `verified` INTEGER NOT NULL DEFAULT 0;

@@ -1,0 +1,453 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Token {
+  token_id               String                @id @db.VarChar(255)
+  name                   String                @db.VarChar(255)
+  symbol                 String?               @db.VarChar(255)
+  treasury_account       String?               @db.VarChar(255)
+  auto_renew_account_id  String?               @db.VarChar(255)
+  auto_renew_time_period String?               @db.VarChar(255)
+  description            String?               @db.Text
+  kyc_key                Boolean?              @default(false)
+  admin_key              Boolean?              @default(false)
+  supply_key             Boolean?              @default(false)
+  wipe_key               Boolean?              @default(false)
+  private_key            Boolean?              @default(false)
+  freeze_key             Boolean?              @default(false)
+  pause_key              Boolean?              @default(false)
+  fee_schedule_key       Boolean?              @default(false)
+  default_freeze_status  Boolean?              @default(false)
+  royalty_percent        String?               @db.VarChar(255)
+  decimal                Int?
+  token_type             String?               @db.VarChar(255)
+  token_category         String?               @db.VarChar(255)
+  total_supply           Float?
+  max_supply             Int?
+  initial_supply         Float?
+  ft_sales_price         Int?
+  status                 String?               @db.VarChar(255)
+  timestamp              DateTime              @default(now())
+  nft                    NFT[]
+  SocialToken            SocialToken[]
+  UserRelationToToken    UserRelationToToken[]
+  social_media           SocialMedia[]
+  additional_info        AdditionalInfo[]
+  image                  Image?
+  wallet_id              String?               @db.VarChar(255)
+  wallet                 Wallet?               @relation(fields: [wallet_id], references: [wallet_address], onDelete: Cascade)
+  user_id                Int
+  Favorites              Favorites[]
+  user                   User                  @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  UserLike               UserLike[]
+  UserView               UserView[]
+  UserShare              UserShare[]
+  tags                   tags[]
+  Sale                   Sale[]
+
+  @@map(name: "token")
+}
+
+model NFT {
+  nft_id          String           @id @unique @db.VarChar(255)
+  description     String?          @db.Text
+  nft_name        String           @db.VarChar(255)
+  status          String?          @db.VarChar(255)
+  metadata        String?          @db.VarChar(255)
+  token_id        String           @db.VarChar(255)
+  serial_number   Int
+  wallet_address  String?          @db.VarChar(255)
+  timestamp       DateTime         @default(now())
+  token           Token            @relation(fields: [token_id], references: [token_id], onDelete: Cascade)
+  wallet          Wallet?          @relation(fields: [wallet_address], references: [wallet_address], onDelete: Cascade)
+  user            User             @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id         Int
+  image           Image?
+  social_media    SocialMedia[]
+  additional_info AdditionalInfo[]
+  Sale            Sale[]
+  Favorites       Favorites[]
+  UserLike        UserLike[]
+  UserView        UserView[]
+  UserShare       UserShare[]
+  tags            tags[]
+  mintedBy        Int?
+  mintedByUser    User?            @relation("mintedByUser-nft-user-fk", fields: [mintedBy], references: [user_id], onDelete: Cascade)
+
+  @@map(name: "nft")
+}
+
+model SocialToken {
+  StId            Int      @id @default(autoincrement())
+  token_id        String   @db.VarChar(255)
+  ownedBy         Int
+  ownedByWalletId String   @db.VarChar(255)
+  volume          Int
+  lastSaleDoneAt  DateTime @default(now())
+  token           Token    @relation(fields: [token_id], references: [token_id], onDelete: Cascade)
+  ownedByUser     User     @relation("ownedByUser-nft-user-fk", fields: [ownedBy], references: [user_id], onDelete: Cascade)
+}
+
+model UserRelationToToken {
+  user_rel_id    Int      @id @default(autoincrement())
+  user_id        Int
+  freeze_status  Boolean?
+  kyc_status     Boolean?
+  token_id       String   @db.VarChar(255)
+  wallet_address String   @db.VarChar(255)
+  token          Token    @relation(fields: [token_id], references: [token_id], onDelete: Cascade)
+
+  @@unique([token_id, wallet_address], map: "token_id_wallet_address")
+  @@map(name: "user-relation-to-token")
+}
+
+model SocialMedia {
+  social_media_id Int     @id @default(autoincrement())
+  media           String  @db.VarChar(255)
+  url             String  @db.VarChar(255)
+  Token           Token?  @relation(fields: [token_id], references: [token_id], onDelete: Cascade)
+  token_id        String? @db.VarChar(255)
+  NFT             NFT?    @relation(fields: [nft_id], references: [nft_id], onDelete: Cascade)
+  nft_id          String? @db.VarChar(255)
+  User            User?   @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  user_id         Int?
+
+  @@map(name: "social_media")
+}
+
+model AdditionalInfo {
+  addt_info_id Int     @id @default(autoincrement())
+  attribute    String  @db.VarChar(255)
+  value        String  @db.VarChar(255)
+  Token        Token?  @relation(fields: [token_id], references: [token_id], onDelete: Cascade)
+  token_id     String? @db.VarChar(255)
+  NFT          NFT?    @relation(fields: [nft_id], references: [nft_id], onDelete: Cascade)
+  nft_id       String? @db.VarChar(255)
+
+  @@map(name: "additional_info")
+}
+
+model Wallet {
+  wallet_id      Int      @id @default(autoincrement())
+  wallet_client  String   @db.VarChar(255)
+  wallet_address String   @unique @db.VarChar(255)
+  timestamp      DateTime @default(now())
+  user_id        Int      @unique
+  user           User     @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  Token          Token[]
+  NFT            NFT[]
+
+  @@map(name: "wallet")
+}
+
+model User {
+  user_id               Int                @id @default(autoincrement())
+  user_name             String             @db.VarChar(255)
+  email                 String?             @db.VarChar(255)
+  user_role             String             @db.VarChar(255)
+  subscriptionType      String             @default("basic") @db.VarChar(255)
+  verified              Int                @default(0)
+  timestamp             DateTime           @default(now())
+  Token                 Token[]
+  nft                   NFT[]
+  SocialToken           SocialToken[]      @relation("ownedByUser-nft-user-fk")
+  nftMinted             NFT[]              @relation("mintedByUser-nft-user-fk")
+  Wallet                Wallet[]
+  // SocialMedia and image will go to user additional info
+  SocialMedia           SocialMedia[]
+  image                 Image?
+  saleBuyer             Sale[]             @relation("buyerId-Sale-user-fk")
+  saleSeller            Sale[]             @relation("sellerId-Sale-user-fk")
+  saleSocialTokenBuyer  socialTokenSales[] @relation("buyerId-st-Sale-user-fk")
+  saleSocialTokenSeller socialTokenSales[] @relation("sellerId-st-Sale-user-fk")
+  userFollowers         Followings[]       @relation(name: "userFollowers")
+  FollowingUsers        Followings[]       @relation(name: "followingUser")
+  Favorites             Favorites[]
+  UserLike              UserLike[]
+  UserView              UserView[]
+  UserShare             UserShare[]
+  notifications         Notifications[]
+  refreshToken          refreshToken[]
+
+  @@map(name: "user")
+}
+
+model Image {
+  image_id    Int      @id @default(autoincrement())
+  cover_pic   String?  @db.VarChar(255)
+  display_pic String   @db.VarChar(255)
+  icon        String   @db.VarChar(255)
+  thumbnail   String   @db.VarChar(255)
+  added_at    DateTime @default(now())
+  token_id    String?  @unique @db.VarChar(255)
+  Token       Token?   @relation(fields: [token_id], references: [token_id], onDelete: Cascade)
+  user_id     Int?     @unique
+  User        User?    @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  nft_id      String?  @unique @db.VarChar(255)
+  NFT         NFT?     @relation(fields: [nft_id], references: [nft_id], onDelete: Cascade)
+
+  @@map(name: "image")
+}
+
+model Followings {
+  followings_id     Int      @id @default(autoincrement())
+  User              User?    @relation(name: "userFollowers", map: "user-following-fk", fields: [user_id], references: [user_id])
+  user_id           Int?
+  FollowingUser     User?    @relation(name: "followingUser", map: "following-user-fk", fields: [following_user_id], references: [user_id])
+  following_user_id Int?
+  timestamp         DateTime @default(now())
+
+  @@map(name: "followings")
+}
+
+model Favorites {
+  favorites_id Int      @id @default(autoincrement())
+  User         User?    @relation(map: "user-favorites-fk", fields: [user_id], references: [user_id])
+  user_id      Int?
+  Token        Token?   @relation(map: "token-favorites-fk", fields: [token_id], references: [token_id])
+  token_id     String?  @db.VarChar(255)
+  NFT          NFT?     @relation(map: "nft-favorites-fk", fields: [nft_id], references: [nft_id])
+  nft_id       String?  @db.VarChar(255)
+  timestamp    DateTime @default(now())
+
+  @@map(name: "favorites")
+}
+
+model Sale {
+  saleId           Int                @id @default(autoincrement())
+  nftId            String?            @db.VarChar(255)
+  tokenId          String?            @db.VarChar(255)
+  saleMode         SaleMode
+  status           SaleStatus         @default(ON_GOING)
+  buyerId          Int?
+  quotedPrice      Int?
+  expiresAt        DateTime?
+  updatedAt        DateTime?
+  sellerId         Int
+  tokenType        String             @db.VarChar(255)
+  volume           Int                @default(1)
+  orginalVolume    Int                @default(1)
+  timestamp        DateTime           @default(now())
+  token            Token?             @relation(map: "ft-Sale-fk", fields: [tokenId], references: [token_id], onDelete: Cascade)
+  NFT              NFT?               @relation(map: "nft-Sale-fk", fields: [nftId], references: [nft_id], onDelete: Cascade)
+  userBuyer        User?              @relation("buyerId-Sale-user-fk", fields: [buyerId], references: [user_id], onDelete: Cascade)
+  userSeller       User               @relation("sellerId-Sale-user-fk", fields: [sellerId], references: [user_id], onDelete: Cascade)
+  socialTokenSales socialTokenSales[]
+
+  // @@unique([nftId, status], map: "user_id_and_unique_id")
+  @@map(name: "sale")
+}
+
+model socialTokenSales {
+  stSaleId   Int      @id @default(autoincrement())
+  saleId     Int
+  buyerId    Int?
+  sellerId   Int
+  volume     Int      @default(1)
+  timestamp  DateTime @default(now())
+  userBuyer  User?    @relation("buyerId-st-Sale-user-fk", fields: [buyerId], references: [user_id], onDelete: Cascade)
+  userSeller User     @relation("sellerId-st-Sale-user-fk", fields: [sellerId], references: [user_id], onDelete: Cascade)
+  Sale       Sale     @relation(fields: [saleId], references: [saleId], onDelete: Cascade)
+
+  @@map(name: "social_token_sales")
+}
+
+model Search {
+  id             Int      @id @default(autoincrement())
+  timestamp      DateTime @default(now())
+  unique_id      String
+  unique_id_type String
+  user_id        Int
+  search_text    String
+
+  @@unique([user_id, unique_id], map: "user_id_and_unique_id")
+  @@map("search")
+}
+
+model SearchCount {
+  unique_id String @id
+  count     Int    @default(1)
+
+  @@map("search_count")
+}
+
+model LeaderBoard {
+  user_id      String @id @unique
+  rank         Int
+  batch_number String @db.VarChar(255)
+
+  @@map("leaderboard")
+}
+
+model Trend {
+  unique_id    String    @id @unique
+  rank         Int
+  type         TrendType
+  batch_number String    @db.VarChar(255)
+
+  @@unique([type, unique_id], map: "trend_type_identifier")
+  @@map("trend")
+}
+
+model TrendRegistry {
+  identifier        String    @id @unique
+  type              TrendType
+  total_like        Int       @default(0)
+  total_share       Int       @default(0)
+  total_view        Int       @default(0)
+  total_transfer    Int       @default(0)
+  total_wishlist    Int       @default(0)
+  total_follow      Int       @default(0)
+  batch_number      String    @db.VarChar(255)
+  cumulative_weight Float     @default(0.0)
+
+  // trend_record_history TrendRecordHistory[]
+  @@unique([type, identifier], map: "trend_type_identifier")
+  @@map("trend_registry")
+}
+
+model TrendRecordHistory {
+  tsh_id     Int       @id @default(autoincrement())
+  timestamp  DateTime  @default(now())
+  trendMode  TrendMode
+  trendType  TrendType
+  weight     Int
+  userId     Int
+  actionerId Int?
+  identifier String    @db.VarChar(255)
+  // trend_registry TrendRegistry @relation(fields: [trend_id], references: [unique_id])
+  // trend_id       String
+
+  @@map("trend_record_history")
+}
+
+model UserLike {
+  like_id   Int      @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  like      Boolean? @default(false)
+  Token     Token?   @relation(map: "token-like-fk", fields: [token_id], references: [token_id])
+  token_id  String?  @db.VarChar(255)
+  NFT       NFT?     @relation(map: "nft-like-fk", fields: [nft_id], references: [nft_id])
+  nft_id    String?  @db.VarChar(255)
+  User      User?    @relation(map: "user-like-fk", fields: [user_id], references: [user_id])
+  user_id   Int?
+
+  @@map("user_like")
+}
+
+model UserView {
+  view_id       Int      @id @default(autoincrement())
+  timestamp     DateTime @default(now())
+  Token         Token?   @relation(map: "token-view-fk", fields: [token_id], references: [token_id])
+  token_id      String?  @db.VarChar(255)
+  NFT           NFT?     @relation(map: "nft-view-fk", fields: [nft_id], references: [nft_id])
+  nft_id        String?  @db.VarChar(255)
+  User          User?    @relation(map: "user-view-fk", fields: [user_id], references: [user_id])
+  user_id       Int?
+  userProfileId Int?
+
+  @@map("user_view")
+}
+
+model UserShare {
+  share_id  Int      @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  media     String   @db.VarChar(255)
+  Token     Token?   @relation(map: "token-share-fk", fields: [token_id], references: [token_id])
+  token_id  String?  @db.VarChar(255)
+  NFT       NFT?     @relation(map: "nft-share-fk", fields: [nft_id], references: [nft_id])
+  nft_id    String?  @db.VarChar(255)
+  User      User?    @relation(map: "user-share-fk", fields: [user_id], references: [user_id])
+  user_id   Int?
+
+  @@map("user_share")
+}
+
+model tags {
+  tag_id    Int      @id @default(autoincrement())
+  timestamp DateTime @default(now())
+  tag       String   @db.VarChar(255)
+  Token     Token?   @relation(map: "token-tag-fk", fields: [token_id], references: [token_id])
+  token_id  String?  @db.VarChar(255)
+  NFT       NFT?     @relation(map: "nft-tag-fk", fields: [nft_id], references: [nft_id])
+  nft_id    String?  @db.VarChar(255)
+}
+
+model Notifications {
+  ntfcn_id   Int      @id @default(autoincrement())
+  type       String   @db.VarChar(255)
+  identifier String   @db.VarChar(255)
+  message    String   @db.VarChar(255)
+  User       User?    @relation(map: "user-notifications-fk", fields: [user_id], references: [user_id])
+  user_id    Int?
+  readFlag   Boolean  @default(false)
+  timestamp  DateTime @default(now())
+}
+
+model newsletterlist {
+  newsletterlist_id Int      @id @default(autoincrement())
+  email             String   @unique @db.VarChar(255)
+  timestamp         DateTime @default(now())
+}
+
+model refreshToken {
+  refTokId  Int      @id @default(autoincrement())
+  userId    Int
+  refToken  String   @unique @db.VarChar(511)
+  timestamp DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [user_id], onDelete: Cascade)
+}
+
+enum OperationType {
+  BUYER_OFFER
+  SELLER_COUNTER
+  BUYER_REJECTION
+  SELLER_REJECTION
+}
+
+enum SaleStatus {
+  ON_GOING
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum SaleMode {
+  DIRECT_SALE
+  DIRECT_SALE_WITH_COUNTER
+  FREE_TRANSFER
+  TIMED_AUCTION
+  DUTCH_AUCTION
+}
+
+enum TrendType {
+  token
+  nft
+  user
+  nftc
+  ft
+  sbt
+}
+
+enum TrendMode {
+  like
+  views
+  share
+  follow
+  mint
+  create
+  wishlist
+  transfer
+  onsale
+  salecancel
+  saleexpire
+}
